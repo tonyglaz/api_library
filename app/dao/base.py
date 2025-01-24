@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 from app.database import async_session_maker
 from sqlalchemy.exc import SQLAlchemyError
 
+
 class BaseDAO:
     model = None
 
@@ -23,14 +24,14 @@ class BaseDAO:
     @classmethod
     async def add(cls, **values):
         async with async_session_maker() as session:
-        # автоматически начинает транзакцию и завершает её после выхода из блока, что гарантирует целостность данных.
+            # автоматически начинает транзакцию и завершает её после выхода из блока, что гарантирует целостность данных.
             async with session.begin():
                 new_instance = cls.model(**values)
-                session.add(new_instance)# Добавляем новый экземпляр в сессию
-                try:# Пытаемся зафиксировать изменения в базе данных
+                session.add(new_instance)  # Добавляем новый экземпляр в сессию
+                try:  # Пытаемся зафиксировать изменения в базе данных
                     await session.commit()
                 except SQLAlchemyError as e:
-                    await session.rollback()#В случае ошибки откатываем транзакцию
+                    await session.rollback()  # В случае ошибки откатываем транзакцию
                     raise e
                 return new_instance
 

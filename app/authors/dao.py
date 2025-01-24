@@ -25,21 +25,22 @@ class AuthorDAO(BaseDAO):
                 return new_author_id
 
     @classmethod
-    async def update_author_by_id(cls,author_id:int,**author_data) -> int:
+    async def update_author_by_id(cls, author_id: int, **author_data) -> int:
         # Фильтруем только те поля, которые не равны None
-        filtered_author_data = {k: v for k, v in author_data.items() if v is not None}
+        filtered_author_data = {k: v for k,
+                                v in author_data.items() if v is not None}
         async with async_session_maker() as session:
             async with session.begin():
                 query = (
-                         update(cls.model)
-                         .where(cls.model.id ==int(author_id))
-                         .values(**filtered_author_data)
-                         .execution_options(synchronize_session="fetch")
-                         )
+                    update(cls.model)
+                    .where(cls.model.id == int(author_id))
+                    .values(**filtered_author_data)
+                    .execution_options(synchronize_session="fetch")
+                )
                 result = await session.execute(query)
 
             try:
-                await session.commit()# Сохраняются изменения в базе данных.
+                await session.commit()  # Сохраняются изменения в базе данных.
             except SQLAlchemyError as e:
                 await session.rollback()
                 raise e
