@@ -1,5 +1,6 @@
-from app.database import DATABASE_URL, Base
+from app.books.models import Book, BookAuthor, Genre, BookGenre
 from app.authors.models import Author
+from app.database import DATABASE_URL, Base
 import asyncio
 from logging.config import fileConfig
 

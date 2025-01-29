@@ -8,12 +8,12 @@ router = APIRouter(prefix="/authors", tags=["Работа с авторами"])
 
 
 @router.get("/", summary="Получить всех авторов")
-async def get_all_authors() -> list[Author]:
-    return await AuthorDAO.find_all()
+async def get_all_authors():
+    return await AuthorDAO.find_all_authors()
 
 
-@router.get("/{id}", summary="Получить одного автора по id")
-async def get_author_by_id(author_id: int) -> Author | dict:
+@router.get("/{id}/", summary="Получить одного автора по id")
+async def get_author_by_id(author_id: int):
     result = await AuthorDAO.find_one_or_none_by_id(author_id)
     if result is None:
         return {"message": f"Автор с ID {author_id} не найден!"}
@@ -32,7 +32,7 @@ async def add_author(author: AuthorADD) -> dict:
 @router.put("/upd/{author_id}")
 async def upd_author_by_id(author_id: int, author_data: AuthorUPD) -> dict:
     # name = author_data.name,birthday = author_data.birthday,biography=author_data.biography
-    check = await AuthorDAO.update_author_by_id(author_id == author_id, name=author_data.name, birthday=author_data.birthday, biography=author_data.biography)
+    check = await AuthorDAO.update_author_by_id(author_id, name=author_data.name, birthday=author_data.birthday, biography=author_data.biography)
     if check:
         return {"message": f"Автор с ID {author_id} успешно обновлен!"}
     else:
