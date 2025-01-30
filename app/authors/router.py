@@ -1,7 +1,7 @@
 # организация маршрутов (эндпоинтов) приложения
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.authors.dao import AuthorDAO
-from app.authors.schemas import Author, AuthorADD, AuthorUPD
+from app.authors.schemas import SAuthor, SAuthorADD, SAuthorUPD
 
 
 router = APIRouter(prefix="/authors", tags=["Работа с авторами"])
@@ -21,7 +21,7 @@ async def get_author_by_id(author_id: int):
 
 
 @router.post("/add/")
-async def add_author(author: AuthorADD) -> dict:
+async def add_author(author: SAuthorADD = Depends()) -> dict:
     check = await AuthorDAO.add_author(**author.model_dump())
     if check:
         return {"message": "Автор успешно добавлен!", "author": author}
@@ -30,9 +30,9 @@ async def add_author(author: AuthorADD) -> dict:
 
 
 @router.put("/upd/{author_id}")
-async def upd_author_by_id(author_id: int, author_data: AuthorUPD) -> dict:
+async def upd_author_by_id(author_id: int, author_data: SAuthorUPD = Depends()) -> dict:
     # name = author_data.name,birthday = author_data.birthday,biography=author_data.biography
-    check = await AuthorDAO.update_author_by_id(author_id, name=author_data.name, birthday=author_data.birthday, biography=author_data.biography)
+    check = await AuthorDAO.update_author_by_id(author_id,  author_data=author_data.model_dump(exclude_unset=True))
     if check:
         return {"message": f"Автор с ID {author_id} успешно обновлен!"}
     else:

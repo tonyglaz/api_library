@@ -1,20 +1,20 @@
 # модели Pydantic для валидации входящих и исходящих данных API
 from datetime import datetime, date
 from pydantic import BaseModel, Field, field_validator
-from app.books.schemas import Book
-from typing import List
+from app.books.schemas import SBook
+from typing import List, Optional
 
 
-class Author(BaseModel):
+class SAuthor(BaseModel):
     id: int
     name: str = Field(..., min_length=1, max_length=50,
                       description="Имя автора,от 1 до 50 символов")
     biography: str = Field(..., min_length=1, max_length=2000,
                            description="Имя автора,от 1 до 2000 символов")
     birthday: date = Field(..., description="Дата рождения автора")
-    
-    books: List["Book"] = []
-     
+
+    books: List["SBook"] = []
+
     @field_validator("birthday")
     def validate_birthday(cls, value):
         if value and value >= datetime.now().date():
@@ -22,12 +22,13 @@ class Author(BaseModel):
         return value
 
 
-class AuthorADD(BaseModel):
+class SAuthorADD(BaseModel):
     name: str = Field(..., min_length=1, max_length=50,
                       description="Имя автора,от 1 до 50 символов")
     biography: str = Field(..., min_length=1, max_length=2000,
                            description="Имя автора,от 1 до 2000 символов")
-    birthday: date = Field(..., description="Дата рождения автора")
+    birthday: date = Field(...,
+                           description="Дата рождения автора в формате ГГГГ-ММ-ДД")
 
     @field_validator("birthday")
     def validate_birthday(cls, value):
@@ -36,11 +37,12 @@ class AuthorADD(BaseModel):
         return value
 
 
-class AuthorUPD(BaseModel):
-    name: str = Field(None, description="Имя автора,от 1 до 50 символов")
-    biography: str = Field(
+class SAuthorUPD(BaseModel):
+    name: Optional[str] = Field(
+        None, description="Имя автора,от 1 до 50 символов")
+    biography: Optional[str] = Field(
         None, description="Имя автора,от 1 до 2000 символов")
-    birthday: date = Field(None, description="Дата рождения автора")
+    birthday: Optional[date] = Field(None, description="Дата рождения автора")
 
     @field_validator("birthday")
     def validate_birthday(cls, value):

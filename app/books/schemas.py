@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List
 
 
-class Book(BaseModel):
+class SBook(BaseModel):
     id: int
     title: str = Field(..., min_length=1, max_length=50,
                        description="Название книги, от 1 до 50 символов")
@@ -22,7 +22,7 @@ class Book(BaseModel):
     genres:  List["Genre"] = []
 
 
-class BookADD(BaseModel):
+class SBookADD(BaseModel):
     title: str = Field(..., min_length=1, max_length=50,
                        description="Название книги, от 1 до 50 символов")
     description: str = Field(..., min_length=1, max_length=2000,
@@ -36,9 +36,9 @@ class BookADD(BaseModel):
         if value and value >= datetime.now().date().year:
             raise ValueError("Год публикации должен быть в прошлом")
         return value
-    
-    
-class BookUPD(BaseModel):
+
+
+class SBookUPD(BaseModel):
     title: str = Field(None, min_length=1, max_length=50,
                        description="Название книги, от 1 до 50 символов")
     description: str = Field(None, min_length=1, max_length=2000,
