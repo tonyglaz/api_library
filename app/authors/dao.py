@@ -56,8 +56,7 @@ class AuthorDAO(BaseDAO):
     async def update_author_by_id(cls, author_id: int, **author_data) -> int:
         # Фильтруем только те поля, которые не равны None
         filtered_author_data = {k: v for k,
-                                v in author_data['author_data'].items() if v is not None}
-        print(filtered_author_data)
+                                v in author_data["author_data"].items() if v is not None}
         async with async_session_maker() as session:
             async with session.begin():
                 query = (

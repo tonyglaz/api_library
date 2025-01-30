@@ -13,8 +13,8 @@ class Author(Base):
     biography: Mapped[str]
     birthday: Mapped[date]
 
-    books:Mapped[list["Book"]] = relationship("Book", secondary="book_authors",
-                         back_populates="authors")
+    books: Mapped[list["Book"]] = relationship("Book", secondary="book_authors",
+                                               back_populates="authors")
 
     def __str__(self):
         return f"{self.__class__.__name__}(id={self.id}, name={self.name})"
@@ -28,5 +28,5 @@ class Author(Base):
             'name': self.name,
             'biography': self.biography,
             'birthday': self.birthday,
-            'books':[book.title for book in self.books] if self.books else None
+            'books': [book.title for book in self.books] if self.books else None
         }

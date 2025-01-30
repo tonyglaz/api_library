@@ -31,6 +31,8 @@ class Book(Base):
         "Author", secondary="book_authors", back_populates="books")
     genres: Mapped[list["BookGenre"]] = relationship(
         "BookGenre", back_populates="book")
+    issues: Mapped[list["BookIssue"]] = relationship(
+        "BookIssue", back_populates="book")
 
     def str(self):
         return f"{self.__class__.__name__}(id={self.id}, title={self.title})"

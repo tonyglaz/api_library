@@ -58,9 +58,7 @@ class BookDAO(BaseDAO):
     async def update_book_by_id(cls, book_id: int, **book_data) -> int:
         # Фильтруем только те поля, которые не равны None
         filtered_book_data = {k: v for k,
-                                v in book_data.items() if v is not None}
-        print(filtered_book_data)
-        print(book_id)
+                              v in book_data["book_data"].items() if v is not None}
         async with async_session_maker() as session:
             async with session.begin():
                 query = (

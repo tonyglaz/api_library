@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = "1234qwer"
     SECRET_KEY: str = "somesecret"
     ALGORITHM: str = "HS256"
-    # Передает путь к e.env-файлу
+    # Передает путь к env-файлу
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(
             os.path.abspath(__file__)), "..", ".env")

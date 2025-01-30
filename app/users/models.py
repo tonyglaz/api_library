@@ -1,9 +1,11 @@
 from sqlalchemy import text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base, str_uniq, int_pk
 
 
 class User(Base):
+    __tablename__ = "users"
+
     id: Mapped[int_pk]
     phone_number: Mapped[str_uniq]
     first_name: Mapped[str]
@@ -15,6 +17,9 @@ class User(Base):
         default=True, server_default=text('true'), nullable=False)
     is_admin: Mapped[bool] = mapped_column(
         default=False, server_default=text('false'), nullable=False)
+
+    borrowed_books: Mapped[list["BookIssue"]] = relationship(
+        "BookIssue", back_populates="user")
 
     extend_existing = True
 

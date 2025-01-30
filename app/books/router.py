@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.books.dao import BookDAO
 from app.books.schemas import SBook, SBookADD, SBookUPD
 
@@ -19,7 +19,7 @@ async def get_book_by_id(book_id: int):
 
 
 @router.post("/add/")
-async def add_book(book: SBookADD) -> dict:
+async def add_book(book: SBookADD = Depends()) -> dict:
     check = await BookDAO.add_book(**book.model_dump())
     if check:
         return {"message": "Книга успешно добавлена!", "book": book}
@@ -28,8 +28,8 @@ async def add_book(book: SBookADD) -> dict:
 
 
 @router.put("/upd/{book_id}")
-async def upd_book_by_id(book_id: int, book_data: SBookUPD) -> dict:
-    check = await BookDAO.update_book_by_id(book_id, title=book_data.title, description=book_data.description, publication_date=book_data.publication_date, available_copies=book_data.available_copies)
+async def upd_book_by_id(book_id: int, book_data: SBookUPD = Depends()) -> dict:
+    check = await BookDAO.update_book_by_id(book_id, book_data=book_data.model_dump(exclude_unset=True))
     if check:
         return {"message": f"Книга с ID {book_id} успешно обновлена!"}
     else:

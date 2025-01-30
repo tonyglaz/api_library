@@ -24,6 +24,13 @@ class UsersDAO(BaseDAO):
             return result.scalar_one_or_none()
 
     @classmethod
+    async def find_one_or_none_by_id(cls, user_id: int) -> User:
+        async with async_session_maker() as session:
+            query = select(User).filter(User.id == user_id)
+            result = await session.execute(query)
+            return result.scalar_one_or_none()
+
+    @classmethod
     async def upd_to_admin(cls, user_id: int, admin: bool):
         async with async_session_maker() as session:
             query = (
