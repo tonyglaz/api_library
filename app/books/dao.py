@@ -5,6 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload, selectinload
 from app.dao.base import BaseDAO
 from app.books.models import Book, BookGenre
+from app.issue.models import BookIssue
 from app.database import async_session_maker
 
 
@@ -15,7 +16,7 @@ class BookDAO(BaseDAO):
     async def find_all_books(cls):
         async with async_session_maker() as session:
             query = select(cls.model).options(selectinload(cls.model.authors), selectinload(
-                cls.model.genres).selectinload(BookGenre.genre))
+                cls.model.genres).selectinload(BookGenre.genre),selectinload(cls.model.issued_user))
             result = await session.execute(query)
 
             books = result.scalars().all()  # Получаем всех авторов
@@ -31,13 +32,15 @@ class BookDAO(BaseDAO):
     async def find_one_or_none_by_id(cls, book_id: int):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(
-                id=book_id).options(selectinload(cls.model.authors), selectinload(
-                    cls.model.genres).selectinload(BookGenre.genre))
+                id=book_id).options(
+                    selectinload(cls.model.authors),
+                    selectinload(cls.model.genres).selectinload(BookGenre.genre),
+                    selectinload(cls.model.issued_user).selectinload(BookIssue.user))
             result = await session.execute(query)
             author = result.scalars().one_or_none()
             if not author:
                 return None
-            return author.to_dict()
+            return author
 
     @classmethod
     async def add_book(cls, **book_data: dict) -> int:

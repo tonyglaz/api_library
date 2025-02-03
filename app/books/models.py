@@ -32,7 +32,7 @@ class Book(Base):
         "Author", secondary="book_authors", back_populates="books")
     genres: Mapped[list["BookGenre"]] = relationship(
         "BookGenre", back_populates="book")
-    issues: Mapped[list["BookIssue"]] = relationship(
+    issued_user: Mapped[list["BookIssue"]] = relationship(
         "BookIssue", back_populates="book")
 
     def str(self):
@@ -49,7 +49,8 @@ class Book(Base):
             'publication_date': self.publication_date,
             'available_copies': self.available_copies,
             'authors': [author.name for author in self.authors] if self.authors else None,
-            'genres:': [book_genre.genre.name for book_genre in self.genres if book_genre.genre] if self.genres else None
+            'genres:': [book_genre.genre.name for book_genre in self.genres if book_genre.genre] if self.genres else None,
+            'issued_user': [user.user.last_name for user in self.issued_user] if self.issued_user else None
         }
 
 

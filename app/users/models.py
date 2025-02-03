@@ -25,3 +25,16 @@ class User(Base):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(id={self.id})"
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'phone_number': self.phone_number,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'password': self.password,
+            'is_user': self.is_user,
+            'is_admin': self.is_admin,
+            'borrowed_books': [issue.book.title for issue in self.borrowed_books] if self.borrowed_books else None
+        }

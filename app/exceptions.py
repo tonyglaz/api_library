@@ -27,3 +27,6 @@ NoBookException = HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail='Книга не найдена')
 NoBookCopiesAvailableException = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST, detail="Нет доступных экземпляров книги")
+
+MaximumBooksException = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST, detail=" Читатель уже имеет максимальное количество книг")

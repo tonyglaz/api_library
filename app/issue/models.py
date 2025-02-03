@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, DateTime, func
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
@@ -13,11 +13,28 @@ class BookIssue(Base):
     book_id: Mapped[int] = mapped_column(ForeignKey("books.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     issue_date: Mapped[date] = mapped_column(
-        default=datetime.now(timezone.utc), server_default=func.now())
-    due_date: Mapped[date] = mapped_column(default=lambda: datetime.now(
-        timezone.utc) + timedelta(days=14), server_default=func.now())
+        default=datetime.now(),
+        server_default=func.now(),
+        nullable=False)
+    due_date: Mapped[date] = mapped_column(
+        default=lambda: datetime.now() + timedelta(days=14),
+        server_default=func.now(),
+        nullable=False)
     return_date: Mapped[Optional[date]]
 
-    book: Mapped["Book"] = relationship("Book", back_populates="issues")
+    book: Mapped["Book"] = relationship("Book", back_populates="issued_user")
     user: Mapped["User"] = relationship(
         "User", back_populates="borrowed_books")
+    
+    def to_dict(self):
+            return {
+                'id': self.id,
+                'book_id': self.book_id,
+                'user_id': self.user_id,
+                'issue_date': self.issue_date,
+                'due_date': self.due_date,
+                'return_date': self.return_date,
+                'book':self.book.title,
+                'user':self.user.first_name
+            }
+

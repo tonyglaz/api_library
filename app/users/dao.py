@@ -1,7 +1,9 @@
 from app.dao.base import BaseDAO
 from app.users.models import User
+from app.issue.models import BookIssue
 from app.database import async_session_maker
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import selectinload
 from sqlalchemy.future import select
 from sqlalchemy import update
 
@@ -19,14 +21,14 @@ class UsersDAO(BaseDAO):
     @classmethod
     async def find_one_or_none_by_email(cls, email: str) -> User:
         async with async_session_maker() as session:
-            query = select(User).filter(User.email == email)
+            query = select(cls.model).filter_by(email = email)
             result = await session.execute(query)
             return result.scalar_one_or_none()
 
     @classmethod
     async def find_one_or_none_by_id(cls, user_id: int) -> User:
         async with async_session_maker() as session:
-            query = select(User).filter(User.id == user_id)
+            query = select(cls.model).filter_by(id = user_id).options(selectinload(cls.model.borrowed_books).selectinload(BookIssue.book))
             result = await session.execute(query)
             return result.scalar_one_or_none()
 

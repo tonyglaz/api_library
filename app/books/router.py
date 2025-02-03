@@ -15,7 +15,7 @@ async def get_book_by_id(book_id: int):
     result = await BookDAO.find_one_or_none_by_id(book_id)
     if result is None:
         return {"message": f"Книга с ID {book_id} не найдена!"}
-    return result
+    return result.to_dict()
 
 
 @router.post("/add/")
