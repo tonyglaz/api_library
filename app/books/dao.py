@@ -19,7 +19,6 @@ class BookDAO(BaseDAO):
             result = await session.execute(query)
 
             books = result.scalars().all()  # Получаем всех авторов
-            print(books)
             books_data = []
             for book in books:
                 print(book)

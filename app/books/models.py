@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from app.database import Base, int_pk, str_null_true
+from app.issue.models import BookIssue
 
 
 class Genre(Base):

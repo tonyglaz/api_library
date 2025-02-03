@@ -2,7 +2,6 @@ from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
-from app.books.models import Book
 from app.users.models import User
 from app.database import Base, int_pk
 
