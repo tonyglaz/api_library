@@ -1,4 +1,4 @@
-from fastapi import Request, HTTPException, status, Depends
+from fastapi import Request, Depends
 from jose import jwt, JWTError
 from app.exceptions import *
 from datetime import datetime, timezone
@@ -15,7 +15,7 @@ def get_token(request: Request):
     return token
 
 
-async def get_current_user(token: str = Depends(get_token)):
+async def get_current_user(token: str = Depends(get_token)) -> User:
     try:
         # декодер для получения из токена декодированной полезной нагрузки (payload) JWT-токена exp, user_id  и sub
         auth_data = get_auth_data()
@@ -29,10 +29,9 @@ async def get_current_user(token: str = Depends(get_token)):
     if (not expire) or (expire_time < datetime.now(timezone.utc)):
         raise TokenExpiredException
     user_id = payload.get("sub")
-    print(user_id)
     if not user_id:
         raise NoUserIdException
-    user = await UsersDAO.find_one_or_none(int(user_id))
+    user = await UsersDAO.find_one_or_none_by_id(int(user_id))
     if not user:
         raise NoUserException
     return user

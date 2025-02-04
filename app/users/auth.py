@@ -19,8 +19,7 @@ def create_access_token(data: dict) -> str:
 
 
 async def authenticate_user(email: EmailStr, password: str):
-    # Тут мы попытались получить данные о пользователе по email.
-    # Затем, если пользователь с таким email получен, мы проверяем
+    # если пользователь с таким email получен, мы проверяем
     # соответствует ли тот пароль что передал пользователь — hash-строке.
     user = await UsersDAO.find_one_or_none_by_email(email)
     if not user or verify_password(password, user.password) is False:

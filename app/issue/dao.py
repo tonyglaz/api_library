@@ -23,10 +23,8 @@ def receive_after_insert(mapper, connection, target):
 
 @event.listens_for(BookIssue, 'after_update')
 def receive_after_update(mapper, connection, target):
-    print('update started')
     if target.return_date is not None:
         book_id = target.book_id
-        print(target.book_id)
         connection.execute(
             update(Book)
             .where(Book.id == book_id)
@@ -52,29 +50,45 @@ class BooksIssueDAO(BaseDAO):
     async def find_issue(cls, user_id: int, book_id: int):
         async with async_session_maker() as session:
             async with session.begin():
-                query = select(cls.model).filter_by(
-                    user_id=user_id, book_id=book_id).options(selectinload(cls.model.user), selectinload(
-                        cls.model.book))
+                query = select(cls.model)\
+                    .where(
+                    cls.model.user_id == user_id,
+                    cls.model.book_id == book_id,
+                    cls.model.return_date.is_(None))\
+                    .options(
+                    selectinload(cls.model.user),
+                    selectinload(cls.model.book))
             result = await session.execute(query)
             book_issue = result.scalars().first()
-            # print(book_issue.to_dict())
+            return book_issue
+
+    @classmethod
+    async def find_all_issues_for_one_user(cls, user_id: int):
+        async with async_session_maker() as session:
+            async with session.begin():
+                query = select(cls.model).filter_by(
+                    user_id=user_id).options(
+                        selectinload(cls.model.user),
+                        selectinload(cls.model.book))
+            result = await session.execute(query)
+            book_issue = result.scalars().all()
             return book_issue
 
     @classmethod
     async def return_book(cls, issue_id, return_date):
         async with async_session_maker() as session:
             async with session.begin():
-                query = (
-                    update(cls.model)
-                    .where(cls.model.id == int(issue_id))
-                    .values(return_date=return_date)
-                    .execution_options(synchronize_session="False")
-                )
+                query = select(cls.model).where(cls.model.id == issue_id)
                 result = await session.execute(query)
+                book_issue = result.scalars().first()
+                if not book_issue:
+                    return None
+
+                book_issue.return_date = return_date
 
             try:
-                await session.commit()  # Сохраняются изменения в базе данных.
+                await session.commit()
             except SQLAlchemyError as e:
                 await session.rollback()
                 raise e
-            return result.rowcount
+            return book_issue

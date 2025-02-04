@@ -25,16 +25,15 @@ class BookIssue(Base):
     book: Mapped["Book"] = relationship("Book", back_populates="issued_user")
     user: Mapped["User"] = relationship(
         "User", back_populates="borrowed_books")
-    
-    def to_dict(self):
-            return {
-                'id': self.id,
-                'book_id': self.book_id,
-                'user_id': self.user_id,
-                'issue_date': self.issue_date,
-                'due_date': self.due_date,
-                'return_date': self.return_date,
-                'book':self.book.title,
-                'user':self.user.first_name
-            }
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'book_id': self.book_id,
+            'user_id': self.user_id,
+            'issue_date': self.issue_date,
+            'due_date': self.due_date,
+            'return_date': self.return_date,
+            'book': self.book.title,
+            'user': self.user.first_name
+        }

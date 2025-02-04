@@ -12,13 +12,6 @@ class UsersDAO(BaseDAO):
     model = User
 
     @classmethod
-    async def find_one_or_none(cls, user_id: int) -> User:
-        async with async_session_maker() as session:
-            query = select(User).filter(User.id == user_id)
-            result = await session.execute(query)
-            return result.scalar_one_or_none()
-
-    @classmethod
     async def find_one_or_none_by_email(cls, email: str) -> User:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(email = email)
@@ -28,7 +21,9 @@ class UsersDAO(BaseDAO):
     @classmethod
     async def find_one_or_none_by_id(cls, user_id: int) -> User:
         async with async_session_maker() as session:
-            query = select(cls.model).filter_by(id = user_id).options(selectinload(cls.model.borrowed_books).selectinload(BookIssue.book))
+            query = select(cls.model)\
+            .filter_by(id = user_id)\
+            .options(selectinload(cls.model.borrowed_books).selectinload(BookIssue.book))
             result = await session.execute(query)
             return result.scalar_one_or_none()
 
@@ -43,7 +38,7 @@ class UsersDAO(BaseDAO):
             )
             result = await session.execute(query)
             try:
-                await session.commit()  # Сохраняются изменения в базе данных.
+                await session.commit()
             except SQLAlchemyError as e:
                 await session.rollback()
                 raise e
